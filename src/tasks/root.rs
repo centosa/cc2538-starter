@@ -42,7 +42,7 @@ pub fn handler(reg: Regs, thr_init: ThrsInit) {
             *ptr.offset(pd4_bp as isize) = pd4_bp;
         }
         Sys::mdelay(500);
-        println!("hallo fredi");
+        println!("hallo!");
         unsafe {
             *ptr.offset(pd4_bp as isize) ^= pd4_bp;
         }

@@ -35,9 +35,9 @@ macro_rules! set_log {(
             struct Logger;
 
             #[repr(C, align(4))]
-            struct Buf(UnsafeCell<[u8; 16]>);
+            struct Buf(UnsafeCell<[u8; 64]>);
 
-            static BUF: Buf = Buf(UnsafeCell::new([0; 16]));
+            static BUF: Buf = Buf(UnsafeCell::new([0; 64]));
 
             unsafe impl $crate::Logger for Logger {
                 type UartMap = $uart_ty;
@@ -54,7 +54,7 @@ macro_rules! set_log {(
                 type SysCtrlMap = Sysctrl;
 
                 const BAUD_RATE: u32 = $baud_rate;
-                const BUF_SIZE: u32 = 16;
+                const BUF_SIZE: u32 = 64;
 
                 #[inline]
                 fn buf() -> NonNull<u8> {

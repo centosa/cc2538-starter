@@ -326,7 +326,7 @@ unsafe fn write_packet<T: Logger>(port: u8, bytes: &[u8]) {
     flush::<T>();
     let mut buf_ptr = T::buf().as_ptr();
     let count = fill_buf(buf_ptr, port, bytes);
-    for _n in 0..(count-1) {
+    for _n in 0..count {
         let ch: u32 = (*(buf_ptr)).into();
         // Spin if transmit FIFO is full
         while uart_periph.uart_fr.txff().read_bit() { };

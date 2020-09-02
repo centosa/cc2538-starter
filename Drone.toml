@@ -33,4 +33,4 @@ port = 2331
 
 [log.dso]
 baud-rate = 115200 
-serial-endpoint = "/dev/ttyUSB1"
+serial-endpoint = "/dev/ttyUSB0"
