@@ -1,0 +1,36 @@
+[memory.flash]
+size = "512K"
+origin = 0x00200000
+
+[memory.ram]
+size = "32K"
+origin = 0x20000000
+
+[heap]
+size = "9468"
+pools = [
+    { block = "4", capacity =  100},
+    { block = "44", capacity = 50 },
+    { block = "268", capacity = 10 },
+    { block = "404", capacity = 6 },
+    { block = "1764", capacity = 1},
+]
+
+[probe]
+gdb-client-command = "gdb-multiarch"
+
+[linker]
+include = ["flash-cca.ld"]
+platform = "arm"
+
+[probe.jlink]
+gdb-server-command = "JLinkGDBServerCLExe"
+commander-command = "JLinkExe"
+interface = "JTAG"
+device = "CC2538SF53"
+speed = 4000
+port = 2331
+
+[log.dso]
+baud-rate = 115200 
+serial-endpoint = "/dev/ttyUSB1"

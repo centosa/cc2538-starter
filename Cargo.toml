@@ -1,0 +1,39 @@
+cargo-features = ["resolver"]
+
+[package]
+name = "cc2538-starter"
+version = "0.1.0"
+authors = ["alfredch <alfred.keller@centosa.ch>"]
+edition = "2018"
+resolver = "2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "cc2538-starter"
+path = "src/bin.rs"
+test = false
+doc = false
+
+[features]
+default = []
+std = [
+    "drone-core/std",
+    "drone-cortexm/std",
+    "drone-tisl-map/std",
+    "drone-cc2538-dso/std",
+    "futures/std",
+]
+heaptrace = ["drone-core/heaptrace"]
+
+[dependencies]
+drone-core = { version = "0.13.0", path = "../drone-os/drone-core" }
+drone-cortexm = { version = "0.13.0", features = ["floating-point-unit", "memory-protection-unit", "security-extension"], path = "../drone-os/drone-cortexm" }
+drone-tisl-map = { version = "0.13.0", features = ["uart", "ioc", "gpio", "sysctrl"], path = "../drone-os/drone-tisl-map" }
+drone-cc2538-dso = { version = "0.12.1", path = "./drone-cc2538-dso" }
+futures = { version = "0.3.0", default-features = false }
+
+[profile.release]
+lto = true
+debug = true
+panic = "abort"

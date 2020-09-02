@@ -1,0 +1,36 @@
+cargo-features = ["resolver"]
+
+[package]
+name = "drone-cc2538-dso"
+version = "0.12.1"
+authors = ["Drone-OS maintainers <alfred.keller@centosa.ch>"]
+edition = "2018"
+resolver = "2"
+repository = "https://github.com/drone-os/drone-cc2538-dso"
+homepage = "https://www.drone-os.com/"
+documentation = "https://api.drone-os.com/drone-cc2538-dso/0.12/drone_cc2538_dso/"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+description = """
+Texas Instruments CC2538 DSO implementation for Drone, an Embedded Operating System.
+"""
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[features]
+default = []
+std = ["drone-core/std", "drone-cortexm/std", "drone-tisl-map/std"]
+
+[dependencies.drone-core]
+version = "0.13.0"
+path = "../../drone-os/drone-core"
+
+[dependencies.drone-cortexm]
+version = "0.13.0"
+path = "../../drone-os/drone-cortexm"
+
+[dependencies.drone-tisl-map]
+version = "0.13.0"
+path = "../../drone-os/drone-tisl-map"
+features = ["uart", "ioc", "sysctrl"]
