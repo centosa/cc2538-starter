@@ -6,19 +6,24 @@ use crate::{
     iocsel::IocSelectorPeriph, 
     sysctrl::SysCtrlPeriph, 
     gpio::GpioPortPeriph,
-    DSO_PORTS,
 };
+#[cfg(not(debug))] use crate::DSO_PORTS;
 use core::{
     cmp::min,
     ptr,
-    ptr::{read_volatile, NonNull},
 };
+#[cfg(not(debug))] use core::ptr::{read_volatile, NonNull};
+#[cfg(debug)] use core::ptr::NonNull;
 use drone_cortexm::reg::prelude::*;
 use drone_tisl_map::periph::uart::{traits::*, UartMap};
 use drone_tisl_map::periph::ioc::pads::{traits::*, IocPadMap, IocPadOverBits};
 use drone_tisl_map::periph::ioc::selectors::{traits::*, IocSelectorMap};
-use drone_tisl_map::periph::gpio::{traits::*, GpioPortMap};
 use drone_tisl_map::periph::sysctrl::{traits::*, SysCtrlMap};
+use drone_tisl_map::periph::gpio::{
+    traits::*, 
+    GpioPortMap, 
+    GpioA, GpioB, GpioC, GpioD,
+};
 
 const KEY: u16 = 0b100_1011;
 const MAX_PACKET_SIZE: usize = 16;
@@ -26,15 +31,8 @@ const MAX_PACKET_SIZE: usize = 16;
 #[doc(hidden)]
 pub unsafe trait Logger {
     type UartMap: UartMap;
-    const UART_SELECTOR: u8;
-    type GpioPortMapTx: GpioPortMap;
-    const PORT_SELECTOR_TX: u8;
     type IocPadMapTx: IocPadMap + IocPadOverBits;
-    const PIN_SELECTOR_TX: u8;
-    type GpioPortMapRx: GpioPortMap;
-    const PORT_SELECTOR_RX: u8;
     type IocPadMapRx: IocPadMap + IocPadOverBits;
-    const PIN_SELECTOR_RX: u8;
     type IocSelectorMap: IocSelectorMap;
     type SysCtrlMap: SysCtrlMap; 
 
@@ -48,12 +46,13 @@ pub unsafe trait Logger {
 #[must_use]
 #[inline]
 // This flag is set in 'just log'
+#[cfg(not(debug))]
 pub fn is_enabled<T: Logger>(port: u8) -> bool {
-    let mut en: bool;
-    unsafe { en = read_volatile(&DSO_PORTS) & 1 << port != 0; }
-    // Uncomment the next line for debugging the dso:
-    if !en {en = true};
-    en
+    unsafe { read_volatile(&DSO_PORTS) & 1 << port != 0 }
+}
+#[cfg(debug)]
+pub fn is_enabled<T: Logger>(_port: u8) -> bool {
+    true
 }
 
 #[doc(hidden)]
@@ -254,25 +253,42 @@ fn enable_uart<T: UartMap>(periph: &mut UartPeriph<T>, baud_rate: u32, clk_speed
 }
 
 unsafe fn write_packet<T: Logger>(port: u8, bytes: &[u8]) {
+
     #[cfg(feature = "std")]
     return;
+
     llvm_asm!("cpsid i" :::: "volatile");
     let mut uart_periph = UartPeriph::<T::UartMap>::summon();
 
     if !is_init(&uart_periph) {
 
+        let ptr_uart = uart_periph.uart_dr.as_ptr() as u32;
+        let uart_nr;
+        match ptr_uart {
+            0x4000C000 => { uart_nr = 0; }
+            0x4000D000 => { uart_nr = 1; }
+            _ => { panic!("invalid uart_nr"); }
+        }
+
         let mut sys_ctrl_periph = SysCtrlPeriph::<T::SysCtrlMap>::summon();
         let mut tx_pad_periph = IocPadPeriph::<T::IocPadMapTx>::summon();
+        let rx_pad_periph = IocPadPeriph::<T::IocPadMapRx>::summon();
         let mut iocsel_periph = IocSelectorPeriph::<T::IocSelectorMap>::summon();
-        let mut gpio_periph_tx = GpioPortPeriph::<T::GpioPortMapTx>::summon();
-        let mut gpio_periph_rx = GpioPortPeriph::<T::GpioPortMapRx>::summon();
+
+        let offset_tx = (tx_pad_periph.ioc_sel.as_ptr() as usize - 0x400D4000 as usize) / 4;
+        let gpio_nr_tx: u8 = (offset_tx / 8) as u8;
+        let pin_nr_tx: u8 = (offset_tx % 8) as u8;
+
+        let offset_rx = (rx_pad_periph.ioc_sel.as_ptr() as usize - 0x400D4000 as usize) / 4;
+        let gpio_nr_rx: u8 = (offset_rx / 8) as u8;
+        let pin_nr_rx: u8 = (offset_rx % 8) as u8;
 
         // Find current clock speed.
         let clk_speed = get_clock_speed(&mut sys_ctrl_periph);
 
         // Enable clock for selected UART.
         sys_ctrl_periph.sysctrl_rcgcuart.modify_reg(|r, v| {
-            match T::UART_SELECTOR {
+            match uart_nr {
                 0 => {
                     r.uart0().set(v);  // UART0
                 }
@@ -284,9 +300,9 @@ unsafe fn write_packet<T: Logger>(port: u8, bytes: &[u8]) {
         });
 
         // Disable UART function and all UART module interrupt.
-        disable_uart(&mut uart_periph);
+        disable_uart(&mut uart_periph); 
 
-        // Set IO clock as UART clock source.
+        //Set IO clock as UART clock source.  
         uart_periph.uart_cc.modify_reg(|r, v| {
             r.cs().write(v, 0x1);
         });
@@ -295,11 +311,25 @@ unsafe fn write_packet<T: Logger>(port: u8, bytes: &[u8]) {
         // -------------------
         // Configure TX pin for a peripheral output function.
         // (modfies GPIO_DIR and GPIO_AFSEL).
-        tx_mode_set(&mut gpio_periph_tx, T::PIN_SELECTOR_TX);
+        match gpio_nr_tx {
+            0 => { 
+                tx_mode_set(&mut GpioPortPeriph::<GpioA>::summon(), pin_nr_tx);
+            }
+            1 => { 
+                tx_mode_set(&mut GpioPortPeriph::<GpioB>::summon(), pin_nr_tx);
+            }
+            2 => { 
+                tx_mode_set(&mut GpioPortPeriph::<GpioC>::summon(), pin_nr_tx);
+            }
+            3 => { 
+                tx_mode_set(&mut GpioPortPeriph::<GpioD>::summon(), pin_nr_tx);
+            }
+            _ => { panic!("invalid gpio_nr_tx"); }
+        }
 
         // Set UARTx TX signal for the desired GPIO pin.
         // (modifies IOC_Pxx_SEL).
-        tx_uart_signal(&mut tx_pad_periph, T::UART_SELECTOR);
+        tx_uart_signal(&mut tx_pad_periph, uart_nr);
 
         // Configure TX pin for the output enabled.
         // (modifies IOC_Pxx_OVER).
@@ -309,11 +339,25 @@ unsafe fn write_packet<T: Logger>(port: u8, bytes: &[u8]) {
         // ------------------
         // Set the pad that is used for UARTx TX
         // (modifes IOC_UARTRXD_UARTx)
-        rx_uart_pad_set(&mut iocsel_periph, T::UART_SELECTOR, T::PORT_SELECTOR_RX, T::PIN_SELECTOR_RX);
+        rx_uart_pad_set(&mut iocsel_periph, uart_nr, gpio_nr_rx, pin_nr_rx);
 
         // Configure RX pin for a peripheral input function.
         // (modfies GPIO_DIR and GPIO_AFSEL).
-        rx_mode_set(&mut gpio_periph_rx, T::PIN_SELECTOR_RX);
+        match gpio_nr_rx {
+            0 => { 
+                rx_mode_set(&mut GpioPortPeriph::<GpioA>::summon(), pin_nr_rx);
+            }
+            1 => { 
+                rx_mode_set(&mut GpioPortPeriph::<GpioB>::summon(), pin_nr_rx);
+            }
+            2 => { 
+                rx_mode_set(&mut GpioPortPeriph::<GpioC>::summon(), pin_nr_rx);
+            }
+            3 => { 
+                rx_mode_set(&mut GpioPortPeriph::<GpioD>::summon(), pin_nr_rx);
+            }
+            _ => { panic!("invalid gpio_nr_tx"); }
+        }
 
         // Set UART operation mode and enable it.
         enable_uart(&mut uart_periph, T::BAUD_RATE, clk_speed);

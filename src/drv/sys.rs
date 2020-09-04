@@ -73,8 +73,11 @@ impl Sys {
 
     pub fn mdelay(duration: u32) {
         // Approximitly milliseconds.
-        for _ in 1..duration {
+        for _ in 0..(duration) {
+            #[cfg(not(debug))]
             Sys::sys_ctrl_delay(10800);
+            #[cfg(debug)]
+            Sys::sys_ctrl_delay(43); // much slower when compiled with debug
         }
     }
 }

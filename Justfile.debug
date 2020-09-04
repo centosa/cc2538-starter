@@ -1,4 +1,4 @@
-export DRONE_RUSTFLAGS := '--cfg cortexm_core="cortexm3_r2p0" --cfg tisl_mcu="cc2538"'
+export DRONE_RUSTFLAGS := '--cfg cortexm_core="cortexm3_r2p0" --cfg debug --cfg tisl_mcu="cc2538"'
 target := 'thumbv8m.main-none-eabihf'
 features := ''
 name := `basename $(pwd)`

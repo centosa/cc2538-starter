@@ -33,4 +33,4 @@ path = "../../drone-os/drone-cortexm"
 [dependencies.drone-tisl-map]
 version = "0.13.0"
 path = "../../drone-os/drone-tisl-map"
-features = ["uart", "ioc", "sysctrl"]
+features = ["uart", "ioc", "sysctrl", "gpio"]

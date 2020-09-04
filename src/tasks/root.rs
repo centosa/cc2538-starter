@@ -37,6 +37,7 @@ pub fn handler(reg: Regs, thr_init: ThrsInit) {
     unsafe {
         *ptr.offset(0b10_000) ^= 0;
     }
+    
     loop {
         unsafe {
             *ptr.offset(pd4_bp as isize) = pd4_bp;

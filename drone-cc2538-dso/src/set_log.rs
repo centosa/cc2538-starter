@@ -2,15 +2,8 @@
 #[macro_export]
 macro_rules! set_log {(
         uart_ty: $uart_ty:ident,
-        uart_nr: $uart_nr:expr,
-        gpio_ty_tx: $gpio_ty_tx:ident,
-        port_nr_tx: $port_nr_tx:expr,
         pad_ty_tx: $pad_ty_tx:ident,
-        pin_nr_tx: $pin_nr_tx:expr,
-        gpio_ty_rx: $gpio_ty_rx:ident,
-        port_nr_rx: $port_nr_rx:expr,
         pad_ty_rx: $pad_ty_rx:ident,
-        pin_nr_rx: $pin_nr_rx:expr,
         baud_rate: $baud_rate:expr,
     ) => {
         const _: () = {
@@ -30,7 +23,7 @@ macro_rules! set_log {(
             use ::drone_tisl_map::periph::ioc::selectors::IocSel;
             use ::drone_tisl_map::periph::sysctrl::Sysctrl;
 
-            //$crate::uart_assert_taken!($uart_ty);
+            $crate::uart_assert_taken!($uart_ty);
 
             struct Logger;
 
@@ -41,15 +34,8 @@ macro_rules! set_log {(
 
             unsafe impl $crate::Logger for Logger {
                 type UartMap = $uart_ty;
-                const UART_SELECTOR: u8 = $uart_nr;
-                type GpioPortMapTx = $gpio_ty_tx;
-                const PORT_SELECTOR_TX: u8 = $port_nr_tx;
                 type IocPadMapTx = $pad_ty_tx;
-                const PIN_SELECTOR_TX: u8 = $pin_nr_tx;
-                type GpioPortMapRx = $gpio_ty_rx;
-                const PORT_SELECTOR_RX: u8 = $port_nr_rx;
                 type IocPadMapRx = $pad_ty_rx;
-                const PIN_SELECTOR_RX: u8 = $pin_nr_rx;
                 type IocSelectorMap = IocSel;
                 type SysCtrlMap = Sysctrl;
 
