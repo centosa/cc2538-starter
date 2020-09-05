@@ -17,10 +17,13 @@ impl<T: SysCtrlMap> SysCtrlPeriph<T> {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! sysctrl_assert_taken {
-    (IocNs) => {
-        $crate::sysctrl_assert_taken!("sysctrl_ns");
+    (Uart0) => {
+        $crate::sysctrl_assert_taken!("sysctrl_rcgcuart_uart0");
     };
-    ($ioc_pad:literal) => {
-        reg::assert_taken!("sysctrl_rcgcuart_uart0");
+    ($sysctrl:ident) => {
+        compile_error!("Unsupported peripheral");
+    };
+    ($sysctrl:literal) => {
+        reg::assert_taken!($sysctrl);
     }
 }

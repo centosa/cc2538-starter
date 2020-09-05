@@ -51,17 +51,15 @@ pub const fn baud_rate(baud_rate: u32) -> u32 {
 #[macro_export]
 macro_rules! uart_assert_taken {
     (Uart0) => {
-        $crate::uart_assert_taken!("uart0_ns");
+        $crate::uart_assert_taken!("uart0");
     };
     (Uart1) => {
-        $crate::uart_assert_taken!("uart1_ns");
+        $crate::uart_assert_taken!("uart1");
     };
     ($uart:ident) => {
         compile_error!("Unsupported peripheral");
     };
     ($uart:literal) => {
-        reg::assert_taken!(concat!($uart, "_ctl_txe"));
-        reg::assert_taken!(concat!($uart, "_ctl_uarten"));
         reg::assert_taken!(concat!($uart, "_ctl"));
         reg::assert_taken!(concat!($uart, "_ibrd"));
         reg::assert_taken!(concat!($uart, "_fbrd"));

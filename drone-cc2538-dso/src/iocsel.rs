@@ -15,11 +15,18 @@ impl<T: IocSelectorMap> IocSelectorPeriph<T> {
 
 #[doc(hidden)]
 #[macro_export]
-macro_rules! iocsel_assert_taken {
-    (IocNs) => {
-        $crate::sysctrl_assert_taken!("iocsel_ns");
+macro_rules! ioc_sel_assert_taken {
+    (Uart0) => {
+        $crate::ioc_sel_assert_taken!("ioc_uartrxd_uart0");
     };
-    ($ioc_pad:literal) => {
-        reg::assert_taken!("ioc_uartrxd_uart0");
+    (Uart1) => {
+        $crate::ioc_sel_assert_taken!("ioc_uartrxd_uart1");
+    };
+    ($uart:ident) => {
+        compile_error!("Unsupported peripheral");
+    };
+    ($uart:literal) => {
+        reg::assert_taken!($uart);
     }
 }
+

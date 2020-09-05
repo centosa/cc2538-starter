@@ -37,6 +37,10 @@ tisl_reg_tokens! {
 
     !scb_ccr;
     !mpu_type; !mpu_ctrl; !mpu_rnr; !mpu_rbar; !mpu_rasr;
+
+    !uart0_ctl; !uart0_ibrd; !uart0_fbrd; !uart0_lcr; !uart0_fr; !uart0_dr; !uart0_im; !uart0_cc;
+    !ioc_pd0_sel; !ioc_pd0_over; !ioc_pd2_sel; !ioc_pd2_over;    
+    !ioc_uartrxd_uart0;
 }
 
 heap! {

@@ -24,6 +24,10 @@ macro_rules! set_log {(
             use ::drone_tisl_map::periph::sysctrl::Sysctrl;
 
             $crate::uart_assert_taken!($uart_ty);
+            $crate::ioc_pad_assert_taken!($pad_ty_tx);
+            $crate::ioc_pad_assert_taken!($pad_ty_rx);
+            $crate::ioc_sel_assert_taken!($uart_ty);
+            $crate::sysctrl_assert_taken!($uart_ty);
 
             struct Logger;
 
