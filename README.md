@@ -26,6 +26,12 @@ git clone https://github.com/drone-os/drone-cortexm.git -b "ahead"
 git clone https://github.com/drone-os/drone-tisl-map.git -b "ahead"
 git clone https://github.com/drone-os/drone-svd.git -b "ahead"
 ```
+You will have to replace your currently installed `drone` utility with the most recent one:
+```bash
+cd mycc2538/drone-os/drone
+just install
+```
+
 And then the following to compile and flash it to your Zolertia FireFly board (no other boards tested yet):
 
 ```bash
