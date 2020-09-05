@@ -16,13 +16,22 @@ impl<T: GpioPortMap> GpioPortPeriph<T> {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! gpio_port_assert_taken {
-    (GpioNs) => {
-        $crate::gpio_assert_taken!("gpio_ns");
+    (GpioA) => {
+        $crate::gpio_assert_taken!("gpio_a_dir");
+    };
+    (GpioB) => {
+        $crate::gpio_assert_taken!("gpio_b_dir");
+    };
+    (GpioC) => {
+        $crate::gpio_assert_taken!("gpio_c_dir");
+    };
+    (GpioD) => {
+        $crate::gpio_assert_taken!("gpio_d_dir");
     };
     ($gpio:ident) => {
         compile_error!("Unsupported peripheral");
     };
     ($gpio:literal) => {
-        reg::assert_taken!(concat!($gpio, "_d_dir"));
+        reg::assert_taken!(concat!($gpio));
     }
 }
