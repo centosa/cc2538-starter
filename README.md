@@ -4,6 +4,7 @@ The Drone-OS toolchain setup for Texas Instruments CC2538 System-on-Chip Solutio
 # Prerequisites:
 - Dev board with the CC2538 processor. Examples: Zolertia FireFly (tested), Zolertia Re-Mote (not tested), Texas Instruments 2538DK (not tested).
 - Segger J-Link.
+- For debug/log: UART-to-USB adapter and cable to receive log output via a virtual COM-port on your computer.
 
 # Usage
 Clone the repository inside a dedicated workspace folder like this:
@@ -30,6 +31,14 @@ And then the following to compile and flash it to your Zolertia FireFly board (n
 ```bash
 cd mycc2538/cc2538-starter
 just flash
+
+To receive logging messages (needs the UART-to-USB adapter connected to GND and pin PD2 as TX output:
+just log
+
+To debug interactively:
+just gdb
+If you want to single-step through your code, you should copy the Justfile.debug to Justfile and recompile.
+With the release version, the binary is highly optimized and gdb won't catch it.
 ```
 
 ## License
