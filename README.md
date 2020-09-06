@@ -2,7 +2,7 @@
 The Drone-OS toolchain setup for Texas Instruments CC2538 System-on-Chip Solution for 2.4-GHz IEEE 802.15.4 and ZigBee®/ZigBee IP® Applications.
 
 # Prerequisites:
-- Dev board with the CC2538 processor. Examples: Zolertia FireFly (tested), Zolertia Re-Mote (not tested), Texas Instruments 2538DK (not tested).
+- Dev board with the CC2538 processor. Examples: Zolertia FireFly (tested), Zolertia Re-Mote (tested), Texas Instruments 2538DK (not tested).
 - Segger J-Link.
 - For debug/log: UART-to-USB adapter and cable to receive log output via a virtual COM-port on your computer.
 
