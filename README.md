@@ -46,6 +46,41 @@ just gdb
 If you want to single-step through your code, you should copy the Justfile.debug to Justfile and recompile.
 With the release version, the binary is highly optimized and gdb won't catch it.
 ```
+## Configuring the DSO API (Drone Serial Logging)
+As the CC2538 has no SWO module, DSO is our solution for sending logging output to your computer via UART-USB adapter.
+In this example. logging output is done to pin PD2, and PD0 for input. Altough the input pin is not used by DSO, it must be configured.
+
+If your dev board does not allow you to access pin PD2 and PD0, you can re-configure the pins easlily. It is all done in the file src/lib.rs:
+
+Example: you have the Re-MOTE board and want to use the following pins (a possible selection for Re-MOTE):
+- PC4 for TX (output)
+- PA0 for RX (input, inactive)
+
+```rust
+// Create the logger.
+drone_cc2538_dso::set_log! {
+    uart_ty: Uart0,      // One of Uart0, Uart1.
+    pad_ty_tx: IocC4,    // Output pad type, range IocA0 .. IocD7.
+    pad_ty_rx: IocA0,    // Input pad type, range IocA0 .. IocD7.
+    baud_rate: 115200,   // Transmission speed.
+}
+```
+
+One more change is needed: The DSO crate needs exclusive access to specific registers, which are no longer available to the application code. A registration macro in src/lib.rs grants access. The pin related registers reserved for the DSO are listed in the exclusion list, like, for instance, `!ioc_pa0_sel`. It means: the application code has no access to IOC_PA0_SEL register because the DSO crate is managing it.
+
+```rust
+tisl_reg_tokens! {
+    /// A set of tokens for all memory-mapped registers.
+    pub struct Regs;
+
+    !scb_ccr;
+    !mpu_type; !mpu_ctrl; !mpu_rnr; !mpu_rbar; !mpu_rasr;
+
+    !uart0_ctl; !uart0_ibrd; !uart0_fbrd; !uart0_lcr; !uart0_fr; !uart0_dr; !uart0_im; !uart0_cc;
+    !ioc_pa0_sel; !ioc_pa0_over; !ioc_pc4_sel; !ioc_pc4_over;    
+    !ioc_uartrxd_uart0;
+}
+```
 
 ## License
 
