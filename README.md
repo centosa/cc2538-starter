@@ -15,16 +15,14 @@ cd mycc2538
 git clone https://github.com/centosa/cc2538-starter.git
 ```
 
-Inside the workspace folder, clone the latest Drone-OS crates into the sub-directory 'drone-os':
+Inside the workspace folder, clone the latest Drone-OS crates:
 
 ```bash
-mkdir drone-os
-cd drone-os
-git clone https://github.com/drone-os/drone.git -b "ahead"
-git clone https://github.com/drone-os/drone-core.git -b "ahead"
-git clone https://github.com/drone-os/drone-cortexm.git -b "ahead"
-git clone https://github.com/drone-os/drone-tisl-map.git -b "ahead"
-git clone https://github.com/drone-os/drone-svd.git -b "ahead"
+git clone https://github.com/drone-os/drone.git
+git clone https://github.com/drone-os/drone-core.git
+git clone https://github.com/drone-os/drone-cortexm.git
+git clone https://github.com/drone-os/drone-tisl-map.git
+git clone https://github.com/drone-os/drone-svd.git
 ```
 You will have to replace your currently installed `drone` utility with the most recent one:
 ```bash
