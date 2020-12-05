@@ -2,7 +2,7 @@ cargo-features = ["resolver"]
 
 [package]
 name = "cc2538-starter"
-version = "0.1.0"
+version = "0.13.0"
 authors = ["alfredch <alfred.keller@centosa.ch>"]
 edition = "2018"
 resolver = "2"
@@ -11,7 +11,6 @@ resolver = "2"
 
 [[bin]]
 name = "cc2538-starter"
-path = "src/bin.rs"
 test = false
 doc = false
 
@@ -27,11 +26,12 @@ std = [
 heaptrace = ["drone-core/heaptrace"]
 
 [dependencies]
-drone-core = { version = "0.13.0", path = "../drone-os/drone-core" }
-drone-cortexm = { version = "0.13.0", features = ["floating-point-unit", "memory-protection-unit", "security-extension"], path = "../drone-os/drone-cortexm" }
-drone-tisl-map = { version = "0.13.0", features = ["uart", "ioc", "gpio", "sysctrl"], path = "../drone-os/drone-tisl-map" }
-drone-cc2538-dso = { version = "0.12.1", path = "./drone-cc2538-dso" }
+drone-core = { version = "0.13.0", path = "../drone-core/" }
+drone-cortexm = { version = "0.13.0", features = ["bit-band", "floating-point-unit", "memory-protection-unit"], path = "../drone-cortexm" }
+drone-tisl-map = { version = "0.13.0", features = ["uart", "ioc", "sysctrl", "gpio"], path = "../drone-tisl-map" }
+drone-cc2538-dso = { version = "0.13.0", path = "./drone-cc2538-dso" }
 futures = { version = "0.3.0", default-features = false }
+typenum = "1.12"
 
 [profile.release]
 lto = true

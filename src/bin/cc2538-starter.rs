@@ -2,13 +2,13 @@
 #![no_main]
 #![no_std]
 
-use cc2538_starter::{
-    tasks,
-    thr::{Handlers, ThrsInit, Vtable},
-    Regs,
-};
 use drone_core::{mem, token::Token};
 use drone_cortexm::processor;
+use cc2538_starter::{
+    tasks,
+    thr::{ThrsInit, Vtable},
+    Regs,
+};
 
 pub struct FlashCca {
     _bootloader_backdoor_disable: u32,
@@ -30,7 +30,7 @@ pub static FLASH_CCA: FlashCca = FlashCca {
 /// The vector table.
 #[no_mangle]
 #[used]
-pub static VTABLE: Vtable = Vtable::new(Handlers { reset });
+pub static VTABLE: Vtable = Vtable::new(reset);
 
 /// The entry point.
 ///

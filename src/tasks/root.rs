@@ -1,6 +1,11 @@
 //! The root task.
 
-use crate::{drv::sys::Sys, thr, thr::ThrsInit, Regs};
+use crate::{
+    drv::sys::Sys, 
+    thr, 
+    thr::ThrsInit, 
+    Regs,
+};
 use drone_cortexm::reg::prelude::*;
 
 /// System Resources
