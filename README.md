@@ -71,14 +71,16 @@ One more change is needed: The DSO crate needs exclusive access to specific regi
 ```rust
 tisl_reg_tokens! {
     /// A set of tokens for all memory-mapped registers.
-    pub struct Regs;
+    index => pub Regs;
 
-    !scb_ccr;
-    !mpu_type; !mpu_ctrl; !mpu_rnr; !mpu_rbar; !mpu_rasr;
+    exclude => {
+        uart0_ctl, uart0_ibrd, uart0_fbrd, uart0_lcr, uart0_fr, uart0_dr, uart0_im, uart0_cc,
+        ioc_pd0_sel, ioc_pd0_over, ioc_pd2_sel, ioc_pd2_over,    
+        ioc_uartrxd_uart0,
 
-    !uart0_ctl; !uart0_ibrd; !uart0_fbrd; !uart0_lcr; !uart0_fr; !uart0_dr; !uart0_im; !uart0_cc;
-    !ioc_pa0_sel; !ioc_pa0_over; !ioc_pc4_sel; !ioc_pc4_over;    
-    !ioc_uartrxd_uart0;
+        scb_ccr,
+        mpu_type, mpu_ctrl, mpu_rnr, mpu_rbar, mpu_rasr,
+    }
 }
 ```
 
